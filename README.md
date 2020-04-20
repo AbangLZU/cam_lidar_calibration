@@ -1,6 +1,6 @@
 # ROS package to determine the extrinsic calibration parameters (3D rotation and translation) between a camera and a lidar.
 
-![alt text](img/sensors.png "Sensor setup")
+#### This Repo is modified based on this project(https://gitlab.acfr.usyd.edu.au/its/cam_lidar_calibration/-/tree/master), I have fixed some bug to make it work in Ubuntu 16.04. I also modified the lidar feature extraction method to make it more robust.
 
 ## Experimental Setup
 
@@ -9,6 +9,9 @@
 3. Choose a stand to hang the target in a way that it does not hold the board with significant protruding elements close to the board boundaries or corners.
 
 ![alt text](img/Experimental_area.png "Experimental Setup")
+
+> Improvement: You don't need to mount the chessboard with a stand. You can just take the board with your hand.
+
 
 ## Data Collection
 

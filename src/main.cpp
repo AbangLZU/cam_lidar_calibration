@@ -76,42 +76,6 @@ namespace extrinsic_calibration {
         NODELET_INFO_STREAM("Camera Lidar Calibration");
     }
 
-//std::pair<pcl::ModelCoefficients, pcl::ModelCoefficients>
-//feature_extraction::findEdges(const PointCloud::Ptr& edge_pair_cloud)
-//{
-//    pcl::ModelCoefficients full_coeff, half_coeff;
-//    pcl::PointIndices::Ptr full_inliers(new pcl::PointIndices), half_inliers(new pcl::PointIndices);
-//    PointCloud::Ptr half_cloud(new PointCloud);
-//
-//    pcl::SACSegmentation<pcl::PointXYZIR> seg;
-//    seg.setModelType(pcl::SACMODEL_LINE);
-//    seg.setMethodType(pcl::SAC_RANSAC);
-//    seg.setDistanceThreshold(0.02);
-//    seg.setInputCloud(edge_pair_cloud);
-//    seg.segment(*full_inliers, full_coeff);  // Fitting line1 through all points
-//    pcl::ExtractIndices<pcl::PointXYZIR> extract;
-//    extract.setInputCloud(edge_pair_cloud);
-//    extract.setIndices(full_inliers);
-//    extract.setNegative(true);
-//    extract.filter(*half_cloud);
-//    seg.setInputCloud(half_cloud);
-//    seg.segment(*half_inliers, half_coeff);
-//    // Fitting line2 through outlier points
-//    // Determine which is above the other
-//    pcl::PointXYZIR full_min, full_max, half_min, half_max;
-//    pcl::getMinMax3D(*edge_pair_cloud, full_min, full_max);
-//    pcl::getMinMax3D(*half_cloud, half_min, half_max);
-//    if (full_max.z > half_max.z)
-//    {
-//        return std::make_pair(full_coeff, half_coeff);
-//    }
-//    else
-//    {
-//        return std::make_pair(half_coeff, full_coeff);
-//    }
-//}
-
-
     void feature_extraction::flag_cb(const std_msgs::Int8::ConstPtr &msg) {
         flag = msg->data; // read flag published by input_sample node
     }
@@ -399,12 +363,6 @@ namespace extrinsic_calibration {
                     // Mark the centre square corner points
                     cv::projectPoints(square_edge, rvec, tvec, i_params.cameramat, i_params.distcoeff, imagePoints1);
                     cv::projectPoints(boardcorners, rvec, tvec, i_params.cameramat, i_params.distcoeff, imagePoints);
-
-//        for (int i = 0; i < square_edge.size(); i++)
-//          cv::circle(cv_ptr->image, imagePoints1[i], 5, CV_RGB(255,0,0), -1);
-//        // Mark the board corner points and centre point
-//        for (int i = 0; i < boardcorners.size(); i++)
-//          cv::circle(cv_ptr->image, imagePoints[i], 5, CV_RGB(255,0,0), -1);
 
                 }
 
