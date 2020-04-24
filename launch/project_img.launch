@@ -1,12 +1,12 @@
 <launch>
 
   <node pkg="cam_lidar_calibration" type="projector" name="projector" output="screen">
-      <param name="roll" value="-1.5838"/>
-      <param name="pitch" value="0.014294"/>
-      <param name="yaw" value="-3.08972"/>
-      <param name="x" value="-0.928175"/>
-      <param name="y" value="0.863075"/>
-      <param name="z" value="0.431455"/>
+      <param name="roll" value="-1.58567"/>
+      <param name="pitch" value="0.00236683"/>
+      <param name="yaw" value="-3.09016"/>
+      <param name="x" value="-0.958068"/>
+      <param name="y" value="0.876605"/>
+      <param name="z" value="0.412671"/>
 
   </node>
 
