@@ -4,6 +4,10 @@
 
 namespace extrinsic_calibration {
 
+    void projector::undistort_img(cv::Mat original_img, cv::Mat undistort_img){
+        remap(original_img, undistort_img, undistort_map1, undistort_map2,cv::INTER_LINEAR);
+    }
+
     void projector::init_params() {
         std::string pkg_loc = ros::package::getPath("cam_lidar_calibration");
         std::ifstream infile(pkg_loc + "/cfg/initial_params.txt");
@@ -31,6 +35,13 @@ namespace extrinsic_calibration {
         }
         cv::Mat(1, i_params.distcoeff_num, CV_64F, &dist_coeff).copyTo(i_params.distcoeff);
         infile >> i_l; infile >> i_b; i_params.image_size = std::make_pair(i_l,i_b);
+
+        // load image undistort params and get the re-map param
+        // 去畸变并保留最大图
+        cv::Size img_size(i_params.image_size.first, i_params.image_size.second);
+        cv::initUndistortRectifyMap(i_params.cameramat,i_params.distcoeff,cv::Mat(),
+                                    cv::getOptimalNewCameraMatrix(i_params.cameramat,i_params.distcoeff,img_size, 1, img_size, 0),
+                                    img_size, CV_16SC2, undistort_map1, undistort_map2);
     }
 
     double *projector::converto_imgpts(double x, double y, double z) {
@@ -98,6 +109,9 @@ namespace extrinsic_calibration {
         catch (cv_bridge::Exception &e) {
             return;
         }
+//        cv::Mat ori_img = cv_ptr->image.clone();
+//        undistort_img(ori_img, cv_ptr->image);
+
         cv::Mat raw_image = cv_ptr->image;
 
         pcl::PointCloud<pcl::PointXYZIR>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZIR>);

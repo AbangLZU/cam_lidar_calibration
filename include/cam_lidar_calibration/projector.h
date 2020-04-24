@@ -28,6 +28,7 @@
 #include <ros/package.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/flann.h>
+#include <opencv/cv.hpp>
 
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
@@ -36,6 +37,8 @@
 namespace extrinsic_calibration {
     class projector {
     private:
+
+        cv::Mat undistort_map1, undistort_map2;
 
         image_transport::Publisher image_publisher;
 
@@ -101,6 +104,8 @@ namespace extrinsic_calibration {
         double * converto_imgpts(double x, double y, double z);
 
         void matrix_to_transfrom(Eigen::MatrixXf & matrix, tf::Transform & trans);
+
+        void undistort_img(cv::Mat original_img, cv::Mat undistort_img);
 
     public:
         projector();

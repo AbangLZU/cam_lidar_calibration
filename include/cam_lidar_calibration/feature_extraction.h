@@ -78,7 +78,12 @@ namespace extrinsic_calibration {
                                    pcl::PointCloud<pcl::PointXYZIR>::Ptr &left_up,
                                    pcl::PointCloud<pcl::PointXYZIR>::Ptr &right_up);
 
+        void undistort_img(cv::Mat original_img, cv::Mat undistort_img);
+
     private:
+
+        cv::Mat undistort_map1, undistort_map2;
+        int img_width, img_height;
 
         struct initial_parameters {
             std::string camera_topic;

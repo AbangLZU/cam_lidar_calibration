@@ -61,7 +61,7 @@ target_include_directories(projector PRIVATE
 target_link_libraries(projector ${catkin_LIBRARIES} ${OpenCV_LIBS} ${Eigen_LIBRARIES})
 
 ## Create the nodelet tutorial library
-add_library(feature_extraction src/main.cpp include/cam_lidar_calibration/projector.h)
+add_library(feature_extraction src/feature_extraction.cpp include/cam_lidar_calibration/projector.h)
 add_dependencies(feature_extraction ${PROJECT_NAME}_gencfg)
 
 target_link_libraries(feature_extraction ${catkin_LIBRARIES} ${OpenCV_LIBS} ${Eigen_LIBRARIES})

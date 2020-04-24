@@ -1,8 +1,12 @@
-#include "main.h"
+#include "feature_extraction.h"
 
 namespace extrinsic_calibration {
 
     feature_extraction::feature_extraction() {}
+
+    void feature_extraction::undistort_img(cv::Mat original_img, cv::Mat undistort_img){
+        remap(original_img, undistort_img, undistort_map1, undistort_map2,cv::INTER_LINEAR);
+    }
 
     void feature_extraction::onInit() {
         // Read input parameters from configuration file
@@ -34,6 +38,10 @@ namespace extrinsic_calibration {
         for (int i = 0; i < i_params.distcoeff_num; i++) {
             infile >> dist_coeff[i];
         }
+
+        infile >> img_width;
+        infile >> img_height;
+
         cv::Mat(1, i_params.distcoeff_num, CV_64F, &dist_coeff).copyTo(i_params.distcoeff);
         diagonal = sqrt(pow(i_params.board_dimension.first, 2) + pow(i_params.board_dimension.second, 2)) / 1000;
         std::cout << "diagonal of the board is " << diagonal;
@@ -74,6 +82,13 @@ namespace extrinsic_calibration {
         visPub = public_nh.advertise<visualization_msgs::Marker>("boardcorners", 0);
         image_publisher = it_p_->advertise("camera_features", 1);
         NODELET_INFO_STREAM("Camera Lidar Calibration");
+
+        // load image undistort params and get the re-map param
+        // 去畸变并保留最大图
+        cv::Size img_size(img_width, img_height);
+        cv::initUndistortRectifyMap(i_params.cameramat,i_params.distcoeff,cv::Mat(),
+                cv::getOptimalNewCameraMatrix(i_params.cameramat,i_params.distcoeff,img_size, 1, img_size, 0),
+                img_size, CV_16SC2, undistort_map1, undistort_map2);
     }
 
     void feature_extraction::flag_cb(const std_msgs::Int8::ConstPtr &msg) {
@@ -280,6 +295,9 @@ namespace extrinsic_calibration {
                 ROS_ERROR("cv_bridge exception: %s", e.what());
             }
 
+//            cv::Mat ori_img = cv_ptr->image.clone();
+//            undistort_img(ori_img, cv_ptr->image);
+
             cv::Mat gray;
             std::vector<cv::Point2f> corners, corners_undistorted;
             std::vector<cv::Point3f> grid3dpoint;
@@ -294,6 +312,8 @@ namespace extrinsic_calibration {
                 ROS_INFO_STREAM("patternfound!");
                 cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1),
                              TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+                //角点绘制
+                cv::drawChessboardCorners(cv_ptr->image, patternNum, corners, patternfound);
                 cv::Size imgsize;
                 imgsize.height = cv_ptr->image.rows;
                 imgsize.width = cv_ptr->image.cols;
@@ -596,9 +616,6 @@ namespace extrinsic_calibration {
 
             pcl::ModelCoefficients::Ptr coefficients_right_dwn(new pcl::ModelCoefficients);
             pcl::PointIndices::Ptr inliers_right_dwn(new pcl::PointIndices);
-
-//            pcl::PointCloud<pcl::PointXYZIR>::Ptr cloud_f(new pcl::PointCloud<pcl::PointXYZIR>),
-//                    cloud_f1(new pcl::PointCloud<pcl::PointXYZIR>);
 
             seg.setModelType(pcl::SACMODEL_LINE);
             seg.setMethodType(pcl::SAC_RANSAC);
